@@ -1,17 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
+const Note = require("./models/note");
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 // app.use(express.static("build"));
-if (process.argv.length < 3) {
-  console.log("give password as argument");
-  process.exit(1);
-}
-const password = process.argv[2];
-const url = `mongodb+srv://todojs:${password}@cluster0.xlsfe.mongodb.net/noteApp?retryWrites=true&w=majority`;
 
 const requestLogger = (request, response, next) => {
   console.log("Method:", request.method);
@@ -21,16 +16,6 @@ const requestLogger = (request, response, next) => {
   next();
 };
 app.use(requestLogger);
-
-mongoose.set("strictQuery", false);
-mongoose.connect(url);
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
-});
-
-const Note = mongoose.model("Note", noteSchema);
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!!</h1>");
@@ -87,6 +72,6 @@ const unknownEndpoint = (request, response, next) => {
 };
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT);
 console.log(`Server running on port ${PORT}`);
