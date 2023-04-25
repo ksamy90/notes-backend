@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../notes-frontend && npm run build && cp -r build ../notes-backend",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
   },
   "author": "samson",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "mongoose": "^7.0.4"
   },
   "devDependencies": {
+    "eslint": "^8.39.0",
     "nodemon": "^2.0.22"
   }
 }
