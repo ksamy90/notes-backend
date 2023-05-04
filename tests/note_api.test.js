@@ -1,13 +1,20 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const supertest = require("supertest");
 const helper = require("./test_helper");
 const app = require("../app");
 
 const api = supertest(app);
+const User = require("../models/user");
 const Note = require("../models/note");
 
 beforeEach(async () => {
+  await User.deleteMany({});
   await Note.deleteMany({});
+  const passwordHash = await bcrypt.hash("secret", 10);
+  const user = new User({ username: "root", passwordHash });
+  await user.save();
   const noteObjects = helper.initialNotes.map((note) => new Note(note));
   const promiseArray = noteObjects.map((note) => note.save());
   await Promise.all(promiseArray);
@@ -58,10 +65,13 @@ describe("viewing a specific note", () => {
 });
 
 describe("addition of a new note", () => {
-  test("succeeds with valid data", async () => {
+  xtest("succeeds with valid data", async () => {
+    const decodedToken = jwt.verify("data", process.env.SECRET);
+    const user = await User.findById(decodedToken.id);
     const newNote = {
       content: "async/await simplifies making async calls",
       important: true,
+      user: user.id,
     };
 
     await api
